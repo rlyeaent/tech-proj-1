@@ -1,36 +1,61 @@
-"""Welcome to Reflex! This file outlines the steps to create a basic app."""
+"""Main Reflex application file."""
 
 import reflex as rx
-
 from rxconfig import config
 
+# Import pages
+from Frontend.pages.home import home_page
+from Frontend.pages.about import about_page
+# from Frontend.pages.services import services_page
+# from Frontend.pages.contact import contact_page
+
+# Import components
+from Frontend.components.navbar import navbar
+from Frontend.components.footer import footer
 
 class State(rx.State):
-    """The app state."""
+    """Global app state."""
+    current_page: str = "home"
 
-
-def index() -> rx.Component:
-    # Welcome Page (Index)
-    return rx.container(
-        rx.color_mode.button(position="top-right"),
-        rx.vstack(
-            rx.heading("Welcome to Reflex!", size="9"),
-            rx.text(
-                "Get started by editing ",
-                rx.code(f"{config.app_name}/{config.app_name}.py"),
-                size="5",
-            ),
-            rx.link(
-                rx.button("Check out our docs!"),
-                href="https://reflex.dev/docs/getting-started/introduction/",
-                is_external=True,
-            ),
-            spacing="5",
-            justify="center",
-            min_height="85vh",
+def base_layout(page_content: rx.Component) -> rx.Component:
+    """Base layout wrapper for all pages."""
+    return rx.box(
+        navbar(),
+        rx.container(
+            page_content,
+            max_width="1200px",
+            padding="2rem",
+            min_height="70vh",
         ),
+        footer(),
+        width="100%",
     )
 
+def index() -> rx.Component:
+    """Home page."""
+    return base_layout(home_page())
 
-app = rx.App()
-app.add_page(index)
+def about() -> rx.Component:
+    """About page."""
+    return base_layout(about_page())
+
+# def services() -> rx.Component:
+    """Services page."""
+    return base_layout(services_page())
+
+# def contact() -> rx.Component:
+    """Contact page."""
+    return base_layout(contact_page())
+
+# Create the app
+app = rx.App(
+    style={
+        "font_family": "Inter, sans-serif",
+    }
+)
+
+# Add pages with routes
+app.add_page(index, route="/", title="Home")
+app.add_page(about, route="/about", title="About Us")
+# app.add_page(services, route="/services", title="Our Services")
+# app.add_page(contact, route="/contact", title="Contact Us")
